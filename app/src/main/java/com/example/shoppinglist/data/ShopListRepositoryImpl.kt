@@ -10,7 +10,7 @@ object ShopListRepositoryImpl : ShopListRepository {
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == UNDEFINED_ID) {
             shopItem.id = autoIncrementId++
-        }
+        } //test
         shopList.add(shopItem)
     }
 
