@@ -2,19 +2,21 @@ package com.example.shoppinglist.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.SortedList
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 import com.example.shoppinglist.domain.ShopListRepository
+import java.util.SortedSet
 
 object ShopListRepositoryImpl : ShopListRepository {
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
     private val shopListLiveData = MutableLiveData<List<ShopItem>>()
 
     private var autoIncrementId = 0
 
     init {
-        shopListLiveData.value= shopList
-        for (i in 0 until 10){
+//        shopListLiveData.value= shopList
+        for (i in 0 until 10000){
             val item = ShopItem("Name $i", i, true)
             addShopItem(item)
         }
