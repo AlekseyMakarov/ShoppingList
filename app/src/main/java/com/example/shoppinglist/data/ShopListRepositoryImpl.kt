@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.SortedList
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 import com.example.shoppinglist.domain.ShopListRepository
+import java.util.Random
 import java.util.SortedSet
 
 object ShopListRepositoryImpl : ShopListRepository {
@@ -17,7 +18,7 @@ object ShopListRepositoryImpl : ShopListRepository {
     init {
 //        shopListLiveData.value= shopList
         for (i in 0 until 10000){
-            val item = ShopItem("Name $i", i, true)
+            val item = ShopItem("Name $i", i, Random().nextBoolean())
             addShopItem(item)
         }
     }
