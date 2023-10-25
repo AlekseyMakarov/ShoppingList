@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,9 @@ class RecyclerViewShopListAdapter:
     companion object{
         const val ENABLED_TYPE = 0
         const val DISABLED_TYPE = 1
+        const val MAX_POOL_SIZE = 15
     }
+    var count = 0
 
     var shopList = listOf <ShopItem>()
     set(value){
@@ -27,7 +30,8 @@ class RecyclerViewShopListAdapter:
     var onShopItemLongClickListener: ((ShopItem)->Unit)? = null
     var onShopItemClickListener: ((ShopItem)->Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
-//        val layout = if(i.enabled) R.layout.item_shop_enabled else R.layout.item_shop_disabled
+        Log.d("OnCreateViewHolder", "count: ${++count}")
+
         val layoutType = when(viewType){
             ENABLED_TYPE -> R.layout.item_shop_enabled
             DISABLED_TYPE -> R.layout.item_shop_disabled

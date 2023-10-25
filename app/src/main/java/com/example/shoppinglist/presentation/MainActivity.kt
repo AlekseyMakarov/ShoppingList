@@ -35,6 +35,14 @@ class MainActivity : AppCompatActivity() {
     fun setupAdapter(){
         adapter = RecyclerViewShopListAdapter()
         rvShopList.adapter = adapter
+        rvShopList.recycledViewPool.setMaxRecycledViews(
+            RecyclerViewShopListAdapter.DISABLED_TYPE,
+            RecyclerViewShopListAdapter.MAX_POOL_SIZE
+        )
+        rvShopList.recycledViewPool.setMaxRecycledViews(
+            RecyclerViewShopListAdapter.ENABLED_TYPE,
+            RecyclerViewShopListAdapter.MAX_POOL_SIZE
+        )
         adapter.onShopItemLongClickListener = {viewModel.changeEnableState(it)}
         adapter.onShopItemClickListener = {Log.d("onShopItemClickListener", it.toString())}
     }
