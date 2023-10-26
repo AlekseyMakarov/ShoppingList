@@ -31,7 +31,6 @@ class RecyclerViewShopListAdapter:
     var onShopItemClickListener: ((ShopItem)->Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
         Log.d("OnCreateViewHolder", "count: ${++count}")
-
         val layoutType = when(viewType){
             ENABLED_TYPE -> R.layout.item_shop_enabled
             DISABLED_TYPE -> R.layout.item_shop_disabled
