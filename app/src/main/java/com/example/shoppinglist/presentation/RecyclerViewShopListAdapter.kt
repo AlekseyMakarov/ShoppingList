@@ -23,8 +23,13 @@ class RecyclerViewShopListAdapter:
 
     var shopList = listOf <ShopItem>()
     set(value){
+        val callback = ShopLIstDiffUtilCallback(shopList, value)
+        val result = DiffUtil.calculateDiff(callback)  /* Вычисления просходят
+         в главном потоке, поэтому при
+         действиях с элементами списка список немного подвисает, нужно исправить в
+          будущем*/
+        result.dispatchUpdatesTo(this)
         field = value
-        notifyDataSetChanged()
 
     }
     var onShopItemLongClickListener: ((ShopItem)->Unit)? = null
