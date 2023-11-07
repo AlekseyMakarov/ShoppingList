@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,21 +20,29 @@ class RecyclerViewShopListAdapter:
         const val DISABLED_TYPE = 1
         const val MAX_POOL_SIZE = 15
     }
+
+    private val asyncListDiffer = AsyncListDiffer<ShopItem>(this, ShopItemDiffCallback())
     var count = 0
 
-    var shopList = listOf <ShopItem>()
-    set(value){
-        val callback = ShopLIstDiffUtilCallback(shopList, value)
-        val result = DiffUtil.calculateDiff(callback)  /* Вычисления просходят
-         в главном потоке, поэтому при
-         действиях с элементами списка список немного подвисает, нужно исправить в
-          будущем*/
-        result.dispatchUpdatesTo(this)
-        field = value
-
-    }
+//    var shopList = listOf <ShopItem>()
+//    set(value){
+//        val callback = ShopLIstDiffUtilCallback(shopList, value)
+//        val result = DiffUtil.calculateDiff(callback)  /* Вычисления просходят
+//         в главном потоке, поэтому при
+//         действиях с элементами списка список немного подвисает, нужно исправить в
+//          будущем*/
+//        result.dispatchUpdatesTo(this)
+//        field = value
+//
+//    }
     var onShopItemLongClickListener: ((ShopItem)->Unit)? = null
     var onShopItemClickListener: ((ShopItem)->Unit)? = null
+
+    fun getList(): List<ShopItem> = asyncListDiffer.currentList
+
+    fun submitList(list:List<ShopItem>){
+        asyncListDiffer.submitList(list)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
         Log.d("OnCreateViewHolder", "count: ${++count}")
         val layoutType = when(viewType){
@@ -46,23 +55,23 @@ class RecyclerViewShopListAdapter:
     }
 
     override fun onBindViewHolder(holder: ShopListViewHolder, position: Int) {
-        holder.tvCount.text = shopList[position].count.toString()
-        holder.tvName.text = shopList[position].name
+        holder.tvCount.text = asyncListDiffer.currentList[position].count.toString()
+        holder.tvName.text = asyncListDiffer.currentList[position].name
         holder.view.setOnLongClickListener {
-            onShopItemLongClickListener?.invoke(shopList[position])
+            onShopItemLongClickListener?.invoke(asyncListDiffer.currentList[position])
             true
         }
         holder.view.setOnClickListener {
-            onShopItemClickListener?.invoke(shopList[position])
+            onShopItemClickListener?.invoke(asyncListDiffer.currentList[position])
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (shopList[position].enabled) ENABLED_TYPE else DISABLED_TYPE
+        return if (asyncListDiffer.currentList[position].enabled) ENABLED_TYPE else DISABLED_TYPE
     }
 
     override fun getItemCount(): Int {
-        return shopList.size
+        return asyncListDiffer.currentList.size
     }
 
     class ShopListViewHolder(val view: View): ViewHolder(view){
