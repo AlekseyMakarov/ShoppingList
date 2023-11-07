@@ -55,14 +55,15 @@ class RecyclerViewShopListAdapter:
     }
 
     override fun onBindViewHolder(holder: ShopListViewHolder, position: Int) {
-        holder.tvCount.text = asyncListDiffer.currentList[position].count.toString()
-        holder.tvName.text = asyncListDiffer.currentList[position].name
+        val item = asyncListDiffer.currentList[position]
+        holder.tvCount.text = item.count.toString()
+        holder.tvName.text = item.name
         holder.view.setOnLongClickListener {
-            onShopItemLongClickListener?.invoke(asyncListDiffer.currentList[position])
+            onShopItemLongClickListener?.invoke(item)
             true
         }
         holder.view.setOnClickListener {
-            onShopItemClickListener?.invoke(asyncListDiffer.currentList[position])
+            onShopItemClickListener?.invoke(item)
         }
     }
 
