@@ -9,7 +9,6 @@ import com.example.shoppinglist.domain.*
 class ShopItemViewModel : ViewModel() {
 
     private val repository = ShopListRepositoryImpl
-
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
@@ -95,6 +94,4 @@ class ShopItemViewModel : ViewModel() {
     fun resetInputNameError() {
         _inputNameError.value = false
     }
-
-
 }
