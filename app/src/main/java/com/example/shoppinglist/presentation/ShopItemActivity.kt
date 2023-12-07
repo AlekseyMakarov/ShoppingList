@@ -27,10 +27,14 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        initViews()
         parseIntent()
-        setListeners()
-        setObservers()
+        launchFragment()
+
+//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+//        initViews()
+//        parseIntent()
+//        setListeners()
+//        setObservers()
     }
 
     companion object {
@@ -52,15 +56,15 @@ class ShopItemActivity : AppCompatActivity() {
             return intent
         }
     }
-
-    private fun initViews() {
-        tilName = findViewById(R.id.til_name)
-        tilCount = findViewById(R.id.til_count)
-        etName = findViewById(R.id.et_name)
-        etCount = findViewById(R.id.et_count)
-        saveButton = findViewById(R.id.save_button)
-    }
-
+//
+//    private fun initViews() {
+//        tilName = findViewById(R.id.til_name)
+//        tilCount = findViewById(R.id.til_count)
+//        etName = findViewById(R.id.et_name)
+//        etCount = findViewById(R.id.et_count)
+//        saveButton = findViewById(R.id.save_button)
+//    }
+//
     private fun parseIntent() {
         if (!intent.hasExtra(MODE_KEY))
             throw Exception("Mode in intent is absent")
@@ -81,67 +85,84 @@ class ShopItemActivity : AppCompatActivity() {
         }
     }
 
-    private fun setListeners() {
-        if (this::mode.isInitialized)
-            when (mode) {
-                MODE_ADD -> saveButton.setOnClickListener {
-                    viewModel.addShopItem(
-                        etName.text.toString(),
-                        etCount.text.toString()
-                    )
-                }
-                MODE_EDIT -> saveButton.setOnClickListener {
-                    viewModel.editShopItem(
-                        etName.text.toString(),
-                        etCount.text.toString()
-                    )
-                }
+    private fun launchFragment(){
+        val fragment = when(mode){
+            MODE_EDIT -> ShopItemFragment.newInstanceEdit(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAdd()
+            else -> throw Exception("Undefined mode")
+        }
+        fragment.onClose = object : OnCloseShopItemFragment{
+            override fun onClose() {
+                finish()
             }
-        etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetInputNameError()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-        })
-
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetInputCountError()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-        })
+        }
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
-
-    private fun setObservers() {
-        viewModel.shopItem.observe(this) {
-            etCount.setText(it.count.toString())
-            etName.setText(it.name)
-        }
-        viewModel.inputNameError.observe(this) {
-            if (it)
-                tilName.error = getString(R.string.error_input_name)
-            else
-                tilName.error = null
-
-        }
-        viewModel.inputCountError.observe(this) {
-            if (it)
-                tilCount.error = getString(R.string.error_input_count)
-            else
-                tilCount.error = null
-        }
-        viewModel.shouldCloseActivity.observe(this) {
-            finish()
-        }
-    }
+//
+//    private fun setListeners() {
+//        if (this::mode.isInitialized)
+//            when (mode) {
+//                MODE_ADD -> saveButton.setOnClickListener {
+//                    viewModel.addShopItem(
+//                        etName.text.toString(),
+//                        etCount.text.toString()
+//                    )
+//                }
+//                MODE_EDIT -> saveButton.setOnClickListener {
+//                    viewModel.editShopItem(
+//                        etName.text.toString(),
+//                        etCount.text.toString()
+//                    )
+//                }
+//            }
+//        etName.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//            }
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                viewModel.resetInputNameError()
+//            }
+//
+//            override fun afterTextChanged(p0: Editable?) {
+//            }
+//        })
+//
+//        etCount.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//            }
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                viewModel.resetInputCountError()
+//            }
+//
+//            override fun afterTextChanged(p0: Editable?) {
+//            }
+//        })
+//    }
+//
+//    private fun setObservers() {
+//        viewModel.shopItem.observe(this) {
+//            etCount.setText(it.count.toString())
+//            etName.setText(it.name)
+//        }
+//        viewModel.inputNameError.observe(this) {
+//            if (it)
+//                tilName.error = getString(R.string.error_input_name)
+//            else
+//                tilName.error = null
+//
+//        }
+//        viewModel.inputCountError.observe(this) {
+//            if (it)
+//                tilCount.error = getString(R.string.error_input_count)
+//            else
+//                tilCount.error = null
+//        }
+//        viewModel.shouldCloseActivity.observe(this) {
+//            finish()
+//        }
+//    }
 }
