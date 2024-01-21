@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnCloseShopItemFragment {
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: RecyclerViewShopListAdapter
     private lateinit var floatingActionButton: FloatingActionButton
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         floatingActionButton = findViewById<FloatingActionButton?>(R.id.button_add_shop_item)
             .also {
                 it.setOnClickListener {
-                    if (isOnePaneMode()){
+                    if (isOnePaneMode()) {
                         val intent = ShopItemActivity.newIntentAddItem(this)
                         startActivity(intent)
                     } else {
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
             Log.d("onShopItemClickListener", it.toString())
-            if (isOnePaneMode()){
+            if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentEditItem(this, it.id)
                 startActivity(intent)
             } else {
@@ -107,16 +107,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isOnePaneMode(): Boolean = shopItemContainer == null
-    private fun launchFragment(fragment: ShopItemFragment){
-        fragment.onClose = object : OnCloseShopItemFragment{
-            override fun onClose() {
-                supportFragmentManager.popBackStack()
-            }
-        }
-
+    private fun launchFragment(fragment: ShopItemFragment) {
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container_land, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun onClose() {
+        supportFragmentManager.popBackStack()
     }
 }

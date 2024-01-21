@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -24,11 +25,10 @@ class ShopItemFragment : Fragment() {
     private lateinit var saveButton: Button
     private var shopItemId = ShopItem.UNDEFINED_ID
     private lateinit var mode: String
-    lateinit var onClose: OnCloseShopItemFragment
+    private lateinit var onClose: OnCloseShopItemFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,6 +105,11 @@ class ShopItemFragment : Fragment() {
         super.onAttach(context)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         parseArguments()
+        if (context is OnCloseShopItemFragment){
+            onClose = context
+        } else {
+            throw RuntimeException("Activity ${context.toString()} does not implement OnCloseShopItemFragment")
+        }
     }
 
     private fun setListeners() {
