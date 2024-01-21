@@ -28,7 +28,10 @@ class ShopItemActivity : AppCompatActivity() {
         setContentView(R.layout.activity_shop_item)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         parseIntent()
-        launchFragment()
+        if (savedInstanceState == null){
+            launchFragment()
+        }
+
 
 //        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
 //        initViews()
@@ -97,7 +100,7 @@ class ShopItemActivity : AppCompatActivity() {
             }
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_fragment_container, fragment)
+            .replace(R.id.shop_item_fragment_container, fragment)
             .addToBackStack(null)
             .commit()
     }

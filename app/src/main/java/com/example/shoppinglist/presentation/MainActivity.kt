@@ -3,6 +3,8 @@ package com.example.shoppinglist.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -13,15 +15,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: RecyclerViewShopListAdapter
     private lateinit var floatingActionButton: FloatingActionButton
+    private var shopItemContainer: FragmentContainerView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        shopItemContainer = findViewById(R.id.fragment_container_land)
+
         setupRecyclerView()
         floatingActionButton = findViewById<FloatingActionButton?>(R.id.button_add_shop_item)
             .also {
                 it.setOnClickListener {
-                    val intent = ShopItemActivity.newIntentAddItem(this)
-                    startActivity(intent)
+                    if (isOnePaneMode()){
+                        val intent = ShopItemActivity.newIntentAddItem(this)
+                        startActivity(intent)
+                    } else {
+                        val fragment = ShopItemFragment.newInstanceAdd()
+                        launchFragment(fragment)
+                    }
+
                 }
             }
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
@@ -63,8 +74,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
             Log.d("onShopItemClickListener", it.toString())
-            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
-            startActivity(intent)
+            if (isOnePaneMode()){
+                val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceEdit(it.id)
+                launchFragment(fragment)
+            }
+
         }
     }
 
@@ -87,5 +104,19 @@ class MainActivity : AppCompatActivity() {
                 RecyclerViewShopListAdapter.MAX_POOL_SIZE
             )
         }
+    }
+
+    private fun isOnePaneMode(): Boolean = shopItemContainer == null
+    private fun launchFragment(fragment: ShopItemFragment){
+        fragment.onClose = object : OnCloseShopItemFragment{
+            override fun onClose() {
+                supportFragmentManager.popBackStack()
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container_land, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
