@@ -2,9 +2,12 @@ package com.example.shoppinglist.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ItemShopDisabledBinding
+import com.example.shoppinglist.databinding.ItemShopEnabledBinding
 import com.example.shoppinglist.domain.ShopItem
 
 class RecyclerViewShopListAdapter :
@@ -24,18 +27,29 @@ class RecyclerViewShopListAdapter :
             DISABLED_TYPE -> R.layout.item_shop_disabled
             else -> throw java.lang.RuntimeException("Unknown view type: $viewType")
         }
-        val binding =
-            ItemShopDisabledBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
-            )
+
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layoutType,
+            parent, false
+        )
         return ShopListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShopListViewHolder, position: Int) {
         val item = getItem(position)
-        holder.binding.tvCount.text = item.count.toString()
-        holder.binding.tvName.text = item.name
+        when (holder.binding) {
+            is ItemShopDisabledBinding -> {
+                holder.binding.tvCount.text = item.count.toString()
+                holder.binding.tvName.text = item.name
+            }
+
+            is ItemShopEnabledBinding -> {
+                holder.binding.tvCount.text = item.count.toString()
+                holder.binding.tvName.text = item.name
+            }
+        }
+
         holder.binding.root.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(item)
             true
