@@ -8,44 +8,42 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity(), OnCloseShopItemFragment {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: RecyclerViewShopListAdapter
-    private lateinit var floatingActionButton: FloatingActionButton
-    private var shopItemContainer: FragmentContainerView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        shopItemContainer = findViewById(R.id.fragment_container_land)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupRecyclerView()
-        floatingActionButton = findViewById<FloatingActionButton?>(R.id.button_add_shop_item)
-            .also {
-                it.setOnClickListener {
-                    if (isOnePaneMode()) {
-                        val intent = ShopItemActivity.newIntentAddItem(this)
-                        startActivity(intent)
-                    } else {
-                        val fragment = ShopItemFragment.newInstanceAdd()
-                        launchFragment(fragment)
-                    }
-
-                }
+        binding.buttonAddShopItem.setOnClickListener {
+            if (isOnePaneMode()) {
+                val intent = ShopItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceAdd()
+                launchFragment(fragment)
             }
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        }
+
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
     }
 
     private fun setupRecyclerView() {
-        val rvShopList: RecyclerView = findViewById(R.id.rv_shop_list)
-        setupAdapter(rvShopList)
+        setupAdapter(binding.rvShopList)
         setupLongClickListener()
         setupClickListener()
-        setupSwipeListener(rvShopList)
+        setupSwipeListener(binding.rvShopList)
     }
 
     private fun setupSwipeListener(rvShopList: RecyclerView) {
@@ -104,7 +102,7 @@ class MainActivity : AppCompatActivity(), OnCloseShopItemFragment {
         }
     }
 
-    private fun isOnePaneMode(): Boolean = shopItemContainer == null
+    private fun isOnePaneMode(): Boolean = binding.fragmentContainerLand == null
     private fun launchFragment(fragment: ShopItemFragment) {
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container_land, fragment)

@@ -7,33 +7,27 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemFragment : Fragment() {
-    private lateinit var viewModel: ShopItemViewModel
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tilCount: TextInputLayout
-    private lateinit var etName: TextInputEditText
-    private lateinit var etCount: TextInputEditText
-    private lateinit var saveButton: Button
+    private val viewModel: ShopItemViewModel by lazy {
+        ViewModelProvider(this)[ShopItemViewModel::class.java]
+    }
     private var shopItemId = ShopItem.UNDEFINED_ID
     private lateinit var mode: String
     private lateinit var onClose: OnCloseShopItemFragment
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val binding: FragmentShopItemBinding
+        get() = _binding ?: throw RuntimeException("FragmentShopItemBinding is null")
+    private var _binding: FragmentShopItemBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        initViews(view)
         setListeners()
         setObservers()
     }
@@ -42,7 +36,13 @@ class ShopItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_shop_item, container, false)
+        _binding = FragmentShopItemBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
@@ -51,7 +51,6 @@ class ShopItemFragment : Fragment() {
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_KEY = "mode"
         private const val SHOP_ITEM_KEY = "shop_item_id"
-
 
         @JvmStatic
         fun newInstanceAdd() =
@@ -71,14 +70,6 @@ class ShopItemFragment : Fragment() {
             }
     }
 
-    private fun initViews(view: View) {
-        tilName = view.findViewById(R.id.til_name)
-        tilCount = view.findViewById(R.id.til_count)
-        etName = view.findViewById(R.id.et_name)
-        etCount = view.findViewById(R.id.et_count)
-        saveButton = view.findViewById(R.id.save_button)
-    }
-
     private fun parseArguments() {
         val arguments = requireArguments()
         if (!arguments.containsKey(MODE_KEY))
@@ -91,9 +82,11 @@ class ShopItemFragment : Fragment() {
                 shopItemId = arguments.getInt(SHOP_ITEM_KEY, ShopItem.UNDEFINED_ID)
                 viewModel.getShopItem(shopItemId)
             }
+
             MODE_ADD -> {
                 mode = MODE_ADD
             }
+
             else -> {
                 throw Exception("Undefined mode")
             }
@@ -102,32 +95,32 @@ class ShopItemFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         parseArguments()
-        if (context is OnCloseShopItemFragment){
+        if (context is OnCloseShopItemFragment) {
             onClose = context
         } else {
-            throw RuntimeException("Activity ${context.toString()} does not implement OnCloseShopItemFragment")
+            throw RuntimeException("Activity $context does not implement OnCloseShopItemFragment")
         }
     }
 
     private fun setListeners() {
         if (this::mode.isInitialized)
             when (mode) {
-                MODE_ADD -> saveButton.setOnClickListener {
+                MODE_ADD -> binding.saveButton.setOnClickListener {
                     viewModel.addShopItem(
-                        etName.text.toString(),
-                        etCount.text.toString()
+                        binding.etName.text.toString(),
+                        binding.etCount.text.toString()
                     )
                 }
-                MODE_EDIT -> saveButton.setOnClickListener {
+
+                MODE_EDIT -> binding.saveButton.setOnClickListener {
                     viewModel.editShopItem(
-                        etName.text.toString(),
-                        etCount.text.toString()
+                        binding.etName.text.toString(),
+                        binding.etCount.text.toString()
                     )
                 }
             }
-        etName.addTextChangedListener(object : TextWatcher {
+        binding.etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -139,7 +132,7 @@ class ShopItemFragment : Fragment() {
             }
         })
 
-        etCount.addTextChangedListener(object : TextWatcher {
+        binding.etCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -153,29 +146,11 @@ class ShopItemFragment : Fragment() {
     }
 
     private fun setObservers() {
-        viewModel.shopItem.observe(viewLifecycleOwner) {
-            etCount.setText(it.count.toString())
-            etName.setText(it.name)
-        }
-        viewModel.inputNameError.observe(viewLifecycleOwner) {
-            if (it)
-                tilName.error = getString(R.string.error_input_name)
-            else
-                tilName.error = null
-
-        }
-        viewModel.inputCountError.observe(viewLifecycleOwner) {
-            if (it)
-                tilCount.error = getString(R.string.error_input_count)
-            else
-                tilCount.error = null
-        }
         viewModel.shouldCloseActivity.observe(viewLifecycleOwner) {
             onClose.onClose()
         }
     }
 }
-
 
 interface OnCloseShopItemFragment {
     fun onClose()
