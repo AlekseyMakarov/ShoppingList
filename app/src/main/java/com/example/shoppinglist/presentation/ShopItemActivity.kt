@@ -3,15 +3,10 @@ package com.example.shoppinglist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity(), OnCloseShopItemFragment {
     private lateinit var viewModel: ShopItemViewModel
@@ -59,9 +54,11 @@ class ShopItemActivity : AppCompatActivity(), OnCloseShopItemFragment {
                 shopItemId = intent.getIntExtra(SHOP_ITEM_KEY, ShopItem.UNDEFINED_ID)
                 viewModel.getShopItem(shopItemId)
             }
+
             MODE_ADD -> {
                 mode = MODE_ADD
             }
+
             else -> {
                 throw Exception("Undefined mode")
             }
@@ -82,5 +79,4 @@ class ShopItemActivity : AppCompatActivity(), OnCloseShopItemFragment {
     override fun onClose() {
         finish()
     }
-
 }

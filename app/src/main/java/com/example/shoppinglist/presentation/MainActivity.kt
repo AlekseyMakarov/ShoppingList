@@ -3,7 +3,6 @@ package com.example.shoppinglist.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -40,7 +39,6 @@ class MainActivity : AppCompatActivity(), OnCloseShopItemFragment {
             shopListAdapter.submitList(it)
         }
     }
-
 
     private fun setupRecyclerView() {
         val rvShopList: RecyclerView = findViewById(R.id.rv_shop_list)

@@ -1,6 +1,5 @@
 package com.example.shoppinglist.presentation
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable

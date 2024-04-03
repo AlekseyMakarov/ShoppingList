@@ -2,12 +2,10 @@ package com.example.shoppinglist.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.SortedList
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 import com.example.shoppinglist.domain.ShopListRepository
 import java.util.Random
-import java.util.SortedSet
 
 object ShopListRepositoryImpl : ShopListRepository {
     private val shopList = sortedSetOf<ShopItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
@@ -17,11 +15,12 @@ object ShopListRepositoryImpl : ShopListRepository {
 
     init {
 //        shopListLiveData.value= shopList
-        for (i in 0 until 100){
+        for (i in 0 until 100) {
             val item = ShopItem("Name $i", i, Random().nextBoolean())
             addShopItem(item)
         }
     }
+
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == UNDEFINED_ID) {
             shopItem.id = autoIncrementId++
@@ -50,7 +49,7 @@ object ShopListRepositoryImpl : ShopListRepository {
         return shopListLiveData
     }
 
-    private fun updateShopListLD(){
+    private fun updateShopListLD() {
         shopListLiveData.value = shopList.toList()
     }
 }
