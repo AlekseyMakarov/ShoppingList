@@ -14,7 +14,7 @@ class ShopListRepositoryImpl(application: Application) : ShopListRepository {
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
-        shopListDao.getShopItem(shopItem.id)
+        shopListDao.deleteShopItem(shopItem.id)
     }
 
     override fun editShopItem(shopItem: ShopItem) {
