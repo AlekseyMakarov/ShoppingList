@@ -9,6 +9,10 @@ import com.example.shoppinglist.domain.AddShopItemUseCase
 import com.example.shoppinglist.domain.EditShopItemUseCase
 import com.example.shoppinglist.domain.GetShopItemUseCase
 import com.example.shoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -16,6 +20,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _inputNameError = MutableLiveData<Boolean>()
     val inputNameError: LiveData<Boolean>
@@ -34,7 +39,9 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         get() = _shouldCloseActivity
 
     fun getShopItem(shopItemId: Int) {
-        _shopItem.value = getShopItemUseCase.getShopItem(shopItemId)
+        scope.launch {
+            _shopItem.value = getShopItemUseCase.getShopItem(shopItemId)
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -43,8 +50,10 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val valid = validateInput(name, count)
         if (valid) {
             val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishActivity()
+            scope.launch {
+                addShopItemUseCase.addShopItem(shopItem)
+                finishActivity()
+            }
         }
     }
 
@@ -55,8 +64,10 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         shopItem.value?.let {
             if (valid) {
                 val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishActivity()
+                scope.launch {
+                    editShopItemUseCase.editShopItem(item)
+                    finishActivity()
+                }
             }
         }
     }
@@ -97,5 +108,10 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
 
     fun resetInputNameError() {
         _inputNameError.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }
