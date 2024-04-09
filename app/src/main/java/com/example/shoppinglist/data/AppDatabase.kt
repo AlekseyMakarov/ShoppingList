@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun shopListDao(): ShopListDao
+
     companion object {
         private var INSTANCE: AppDatabase? = null
         private val LOCK = Any()
@@ -25,7 +26,8 @@ abstract class AppDatabase : RoomDatabase() {
                     application,
                     AppDatabase::class.java,
                     DB_NAME
-                ).build()
+                ).allowMainThreadQueries() //TODO Удалить после теста
+                    .build()
                 INSTANCE = db
                 return INSTANCE as AppDatabase
             }
