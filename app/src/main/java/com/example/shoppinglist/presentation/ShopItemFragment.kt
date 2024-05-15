@@ -9,12 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.shoppinglist.ShoppingListApplication
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
+    private val component by lazy {
+        (requireActivity().application as ShoppingListApplication).component
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: ShopItemViewModel by lazy {
-        ViewModelProvider(this)[ShopItemViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
     }
     private var shopItemId = ShopItem.UNDEFINED_ID
     private lateinit var mode: String
@@ -94,6 +102,7 @@ class ShopItemFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         parseArguments()
         if (context is OnCloseShopItemFragment) {

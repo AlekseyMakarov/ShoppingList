@@ -6,17 +6,25 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
+import com.example.shoppinglist.ShoppingListApplication
 import com.example.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class ShopItemActivity : AppCompatActivity(), OnCloseShopItemFragment {
     private lateinit var viewModel: ShopItemViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     private var shopItemId = ShopItem.UNDEFINED_ID
     private lateinit var mode: String
+    private val component by lazy {
+        (application as ShoppingListApplication).component
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
         parseIntent()
         if (savedInstanceState == null) {
             launchFragment()

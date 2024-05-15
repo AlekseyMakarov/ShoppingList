@@ -9,8 +9,9 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ItemShopDisabledBinding
 import com.example.shoppinglist.databinding.ItemShopEnabledBinding
 import com.example.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
-class RecyclerViewShopListAdapter :
+class RecyclerViewShopListAdapter @Inject constructor() :
     ListAdapter<ShopItem, ShopListViewHolder>(ShopItemDiffCallback()) {
     companion object {
         const val ENABLED_TYPE = 0
